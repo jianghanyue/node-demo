@@ -8,9 +8,25 @@ const router = require('koa-router')()
 const jwtKoa = require('koa-jwt')
 const controller = require('./controllers')
 const rest = require('./rest')
+const cors = require('koa2-cors');
 
 // error handler
 onerror(app)
+
+// 处理前端跨域的配置
+app.use(cors({
+  origin: function (ctx) {
+    if (ctx.url === '/login') {
+      return "*"; // 允许来自所有域名请求
+    }
+    return 'http://localhost:8080';
+  },
+  exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
+  maxAge: 5,
+  credentials: true,
+  allowMethods: ['GET', 'POST', 'DELETE'],
+  allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
+}));
 
 // middlewares
 app.use(bodyparser({
@@ -20,8 +36,8 @@ app.use(rest.restify())
 app.use(router.routes());
 app.use((ctx, next) => {
   return next().catch((err) => {
-    if(err.status === 401){
-      ctx.status = 401;
+    if(err.status === 403){
+      ctx.status = 403;
       ctx.body = 'Protected resource, use Authorization header to get access\n';
     }else{
       throw err;
@@ -31,7 +47,7 @@ app.use((ctx, next) => {
 app.use(jwtKoa({
   secret: 'koa-login'
 }).unless({
-  path: [/\/api\/login/,/\/api\/register/]
+  path: [/\/api\/login/,/\/api\/register/,/\/api/]
 }));
 app.use(controller());
 app.use(json())
