@@ -47,7 +47,7 @@ app.use((ctx, next) => {
 app.use(jwtKoa({
   secret: 'koa-login'
 }).unless({
-  path: [/\/api\/login/,/\/api\/register/,/\/api/]
+  path: [/\/api\/login/,/\/api\/register/,/\/api/,/\/api\/download/]
 }));
 app.use(controller());
 app.use(json())

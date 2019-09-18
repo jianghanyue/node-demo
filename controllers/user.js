@@ -1,4 +1,5 @@
 const user = require('../models/user.js')
+const userInfoDb = require('../models/userInfo.js')
 const jwt = require('jsonwebtoken');
 const APIError = require('../rest').APIError;
 let bcrypt = require('bcryptjs');
@@ -6,16 +7,28 @@ let bcrypt = require('bcryptjs');
 module.exports = {
     'GET /api/user/:id': async (ctx, next) => {
         var id = ctx.params.id
-        const result = await user.findAll({
+        const result = await userInfoDb.findAll({
             where: {
                 id: id
             }
         });
         ctx.rest({result})
     },
+    'GET /api/userInfo': async (ctx, next) => {
+        let token = ctx.request.headers['authorization']
+        let payload = jwt.decode(token.split(' ')[1],'koa-login')
+        var id = payload.id
+        let userInfo = await userInfoDb.find({
+            where: {
+                id: id
+            }
+        });
+        ctx.rest({data: userInfo})
+    },
+
+
     'POST /api/login': async (ctx, next) => {
-        console.log(ctx.request.body)
-        let name = ctx.request.body.name,
+        let name = ctx.request.body.username,
             password = ctx.request.body.password.toString()
         const result = await user.findOne({
             where: {
@@ -42,9 +55,11 @@ module.exports = {
         }
     },
     'POST /api/register': async (ctx, next) => {
-        let password = ctx.request.body.password,
-            user_name = ctx.request.body.name
 
+        let password = ctx.request.body.password,
+            user_name = ctx.request.body.username,
+            name = ctx.request.body.name
+        console.log(ctx.request.body,password)
         // try {
             let user_ver = await user.findOne({
                 where: {
@@ -88,6 +103,8 @@ module.exports = {
         var result = await user.create({
             password: bcryptPro,
             user_name: user_name,
+            name: name,
+            roles: 'member'
         })
         result.code = 0
         ctx.rest({result})
