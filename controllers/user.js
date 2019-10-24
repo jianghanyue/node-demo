@@ -26,7 +26,6 @@ module.exports = {
         ctx.rest({data: userInfo})
     },
 
-
     'POST /api/login': async (ctx, next) => {
         let name = ctx.request.body.username,
             password = ctx.request.body.password.toString()
@@ -37,7 +36,7 @@ module.exports = {
         });
         if (result) {
             if (!bcrypt.compareSync(password, result.password)) {
-                ctx.response.status = 400;
+                ctx.response.status = 200;
                 ctx.rest({info: '密码错误!'})
             } else {
                 let userToken = {
