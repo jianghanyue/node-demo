@@ -1,8 +1,9 @@
 const user = require('../models/user.js')
 const userInfoDb = require('../models/userInfo.js')
-const jwt = require('jsonwebtoken');
 const APIError = require('../rest').APIError;
+let jwt = require('jsonwebtoken')
 let bcrypt = require('bcryptjs');
+let tool = require('../public/tool')
 
 module.exports = {
     'GET /api/user/:id': async (ctx, next) => {
@@ -16,13 +17,14 @@ module.exports = {
     },
     'GET /api/userInfo': async (ctx, next) => {
         let token = ctx.request.headers['authorization']
-        let payload = jwt.decode(token.split(' ')[1],'koa-login')
+        let payload = await tool.deCode(token)
         var id = payload.id
         let userInfo = await userInfoDb.find({
             where: {
                 id: id
             }
         });
+        userInfo.avatar = `http://${ctx.headers.host}/api/${userInfo.avatar}`
         ctx.rest({data: userInfo})
     },
 
@@ -54,7 +56,6 @@ module.exports = {
         }
     },
     'POST /api/register': async (ctx, next) => {
-
         let password = ctx.request.body.password,
             user_name = ctx.request.body.username,
             name = ctx.request.body.name

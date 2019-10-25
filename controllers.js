@@ -3,19 +3,23 @@ const jwt = require('jsonwebtoken');
 const userInfoDb = require('./models/userInfo')
 
 function addMapping(router, mapping) {
-    for (var url in mapping) {
+    for (let url in mapping) {
         if (url.startsWith('GET')) {
-            var path = url.substring(4);
+            let path = url.substring(4);
             router.get(path,mapping[url]);
             console.log(`register URL mapping: GET ${path}`);
         } else if (url.startsWith('POST')) {
-            var path = url.substring(5);
+            let path = url.substring(5);
             router.post(path, mapping[url]);
             console.log(`register URL mapping: POST ${path}`);
         } else if (url.startsWith('PUT')) {
-            var path = url.substring(4);
+            let path = url.substring(4);
             router.put(path, mapping[url]);
             console.log(`register URL mapping: Put ${path}`);
+        } else if (url.startsWith('DELETE')) {
+            let path = url.substring(7);
+            router.delete(path, mapping[url]);
+            console.log(`register URL mapping: DELETE ${path}`);
         } else {
             console.log(`invalid URL: ${url}`);
         }
@@ -66,7 +70,6 @@ function addUploadFile(router) { //文件上传
 module.exports = function (dir) {
     let controllers_dir = dir || 'controllers',
         router = require('koa-router')();
-		console.log(router,33333)
     addControllers(router, controllers_dir);
     addUploadFile(router);
     return router.routes();
