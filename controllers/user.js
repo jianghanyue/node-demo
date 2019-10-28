@@ -24,11 +24,6 @@ module.exports = {
                 id: id
             }
         });
-        if (ctx.headers.host.indexOf('http')>0) {
-            userInfo.avatar = `${ctx.headers.host}/api/${userInfo.avatar}`
-        } else {
-            userInfo.avatar = `http://${ctx.headers.host}/api/${userInfo.avatar}`
-        }
         ctx.rest({data: userInfo})
     },
 
