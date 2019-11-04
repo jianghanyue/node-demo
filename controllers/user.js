@@ -57,7 +57,7 @@ module.exports = {
     'POST /api/register': async (ctx, next) => {
         let password = ctx.request.body.password,
             user_name = ctx.request.body.username,
-            name = ctx.request.body.name
+            name = ctx.request.body.name || ctx.request.body.username
         console.log(ctx.request.body,password)
         // try {
             let user_ver = await user.findOne({
@@ -80,7 +80,7 @@ module.exports = {
         }
 
         if (!user_name) {
-            ctx.rest({code: 0,info: '请填写姓名!'})
+            ctx.rest({code: 0,info: '请填写账号!'})
             return
         }
         //生成加密密码

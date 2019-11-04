@@ -37,7 +37,6 @@ function addControllers(router,controllers_dir) {
         addMapping(router, mapping)
     }
 }
-
 function addUploadFile(router) { //文件上传
     const multer = require('koa-multer');
     //配置

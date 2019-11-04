@@ -1,6 +1,7 @@
 const schedule = require('../models/schedule.js')
 let tool = require('../public/tool')
 var url = require('url');
+const Sequelize = require('sequelize');
 
 module.exports = {
 	'POST /api/schedule': async (ctx, next) => {
@@ -24,23 +25,32 @@ module.exports = {
 			remarks: ctx.request.body.remarks || ''
 		}, {
 			where: {
-				id: ctx.request.body.id
+				id: ctx.request.body.id,
+
 			}
 		})
 		ctx.rest({result})
 	},
 	'GET /api/schedule': async (ctx, next) => {
 		let info = await tool.deCode(ctx.request.headers['authorization'])
-		let scheduleList = await schedule.findAll({
+		let condition = {
 			where: {
 				userId: info.id
 			}
-		});
+		}
+		if (url.parse(ctx.url, true).query.today) {
+			let todayStartTime = tool.todayStartTime
+			let todayEndTime = tool.todayEndTime
+			console.log(todayStartTime,todayEndTime)
+			condition.where.endTime = {$gte: todayStartTime, $lte: todayEndTime}
+		}
+
+
+		let scheduleList = await schedule.findAll(condition);
 		ctx.rest({list: scheduleList})
 	},
 	'GET /api/schedule/detail': async (ctx, next) => {
 		// console.log(ctx.request.params)
-		console.log();
 		let scheduleDetail = await schedule.find({
 			where: {
 				id: url.parse(ctx.url, true).query.id
