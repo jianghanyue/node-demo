@@ -26,26 +26,26 @@ module.exports = {
 		}, {
 			where: {
 				id: ctx.request.body.id,
-
 			}
 		})
 		ctx.rest({result})
 	},
 	'GET /api/schedule': async (ctx, next) => {
+		let params = url.parse(ctx.url, true).query
 		let info = await tool.deCode(ctx.request.headers['authorization'])
 		let condition = {
 			where: {
 				userId: info.id
 			}
 		}
-		if (url.parse(ctx.url, true).query.today) {
+		if (params.today) {
 			let todayStartTime = tool.todayStartTime
 			let todayEndTime = tool.todayEndTime
-			console.log(todayStartTime,todayEndTime)
 			condition.where.endTime = {$gte: todayStartTime, $lte: todayEndTime}
 		}
-
-
+		if (params.title) {
+			condition.where.schedule = {$like: '%' +params.title + '%'}
+		}
 		let scheduleList = await schedule.findAll(condition);
 		ctx.rest({list: scheduleList})
 	},
