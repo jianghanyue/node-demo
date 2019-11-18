@@ -6,5 +6,6 @@ module.exports = db.defineModel('schedule', {
 	userId: db.STRING(),
 	endTime: db.BIGINT(),
 	urgent: db.BIGINT(),
-	remarks: db.STRING()
+	remarks: db.STRING(),
+	projectId: db.STRING(),
 });

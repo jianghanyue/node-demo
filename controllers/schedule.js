@@ -12,7 +12,8 @@ module.exports = {
 			userId: info.id,
 			endTime: ctx.request.body.endTime || 0,
 			urgent: ctx.request.body.urgent || 0,
-			remarks: ctx.request.body.remarks || ''
+			remarks: ctx.request.body.remarks || '',
+			projectId: ctx.request.body.projectId || '',
 		})
 		ctx.rest({result})
 	},
@@ -22,7 +23,8 @@ module.exports = {
 			isSuccess: ctx.request.body.isSuccess,
 			endTime: ctx.request.body.endTime || 0,
 			urgent: ctx.request.body.urgent || 0,
-			remarks: ctx.request.body.remarks || ''
+			remarks: ctx.request.body.remarks || '',
+			projectId: ctx.request.body.projectId || '',
 		}, {
 			where: {
 				id: ctx.request.body.id,
@@ -36,6 +38,11 @@ module.exports = {
 		let condition = {
 			where: {
 				userId: info.id
+			}
+		}
+		if (params.projectId) {
+			condition.where = {
+				projectId: params.projectId
 			}
 		}
 		if (params.today) {

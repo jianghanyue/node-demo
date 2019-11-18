@@ -38,13 +38,14 @@ app.use(rest.restify())
 app.use(router.routes());
 app.use((ctx, next) => {
   return next().catch((err) => {
-      console.log(err,err.name)
-      if(err.status === 403||err.name==='TokenExpiredError'||err.message.indexOf('token')!==-1){
+
+      // if(err.status === 403||err.name==='TokenExpiredError'||err.message.indexOf('token')!==-1){
       ctx.status = 403;
       ctx.body = 'Protected resource, use Authorization header to get access\n';
-    }else{
-      throw err;
-    }
+	  console.log(err,err.name,err.code,err.err)
+    // }else{
+    //   throw err;
+    // }
   })
 })
 app.use(jwtKoa({
