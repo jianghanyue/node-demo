@@ -1,5 +1,6 @@
 const project = require('../models/project')
 const projectUser = require('../models/projectUser')
+const userInfoDb = require('../models/userInfo.js')
 let tool = require('../public/tool')
 
 module.exports = {
@@ -26,6 +27,24 @@ module.exports = {
 			}
 		})
 		ctx.rest({list: projectList})
+	},
+	'GET /api/projectDetail': async (ctx, next) => {
+		let projectDetail = await project.find({
+			where: {
+				id: ctx.request.body.projectId
+			}
+		})
+		let projectUserList = await projectUser.findAll({
+			where: {
+				projectId: projectDetail.id
+			}
+		})
+		let member = await userInfoDb.findAll({
+			where: {
+				id: {$in: projectUserList.map(t=>t.userId)}
+			}
+		})
+		ctx.rest({ data: projectDetail,member: member})
 	},
 	'GET /api/myProject': async (ctx, next) => {
 		let info = await tool.deCode(ctx.request.headers['authorization'])
